@@ -126,8 +126,10 @@
     function onMouse(touchType) {
         return function(ev) {
             // prevent mouse events
-            preventMouseEvents(ev);
-
+            if (TouchEmulator.ignoreTags.indexOf(ev.target.tagName) < 0) {
+                // prevent mouse events
+                preventMouseEvents(ev);
+            }
             if (ev.which !== 1) {
                 return;
             }
@@ -307,15 +309,16 @@
         window.addEventListener("mouseover", preventMouseEvents, true);
 
         // it uses itself!
-        window.addEventListener("touchstart", showTouches, true);
-        window.addEventListener("touchmove", showTouches, true);
-        window.addEventListener("touchend", showTouches, true);
-        window.addEventListener("touchcancel", showTouches, true);
+        window.addEventListener("touchstart", showTouches, false);
+        window.addEventListener("touchmove", showTouches, false);
+        window.addEventListener("touchend", showTouches, false);
+        window.addEventListener("touchcancel", showTouches, false);
     }
 
     // start distance when entering the multitouch mode
     TouchEmulator.multiTouchOffset = 75;
-
+    // tags that shouldn't swallow mouse events
+    TouchEmulator.ignoreTags = ['TEXTAREA', 'INPUT'];
     /**
      * css template for the touch rendering
      * @param touch
@@ -344,8 +347,7 @@
             userSelect: 'none',
             webkitTransform: transform,
             mozTransform: transform,
-            transform: transform,
-            zIndex: 100
+            transform: transform
         }
     };
 
